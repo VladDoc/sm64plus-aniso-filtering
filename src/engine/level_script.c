@@ -528,10 +528,19 @@ static void level_cmd_create_warp_node(void) {
         struct ObjectWarpNode *warpNode =
             alloc_only_pool_alloc(sLevelPool, sizeof(struct ObjectWarpNode));
 
-        warpNode->node.id = CMD_GET(u8, 2);
+        /*warpNode->node.id = CMD_GET(u8, 2);
         warpNode->node.destLevel = CMD_GET(u8, 3) + CMD_GET(u8, 6);
         warpNode->node.destArea = CMD_GET(u8, 4);
-        warpNode->node.destNode = CMD_GET(u8, 5);
+        warpNode->node.destNode = CMD_GET(u8, 5);*/
+
+        s16 salt = 0;
+        
+        set_seed(salt + CMD_GET(u8, 2) * (CMD_GET(u8, 3) + CMD_GET(u8, 6)) * CMD_GET(u8, 4) * CMD_GET(u8, 5));
+
+        warpNode->node.id = CMD_GET(u8, 2);
+        warpNode->node.destLevel = random_number(20);
+        warpNode->node.destArea = 0x01;
+        warpNode->node.destNode = 0x0A;
 
         warpNode->object = NULL;
 
