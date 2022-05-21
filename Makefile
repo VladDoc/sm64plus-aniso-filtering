@@ -270,7 +270,7 @@ SRC_DIRS := src src/engine src/game src/audio src/menu src/buffers actors levels
 ifeq ($(TARGET_N64),1)
   SRC_DIRS += asm lib
 else
-  SRC_DIRS += src/pc src/pc/gfx src/pc/audio src/pc/controller
+  SRC_DIRS += src/pc src/pc/gfx src/pc/audio src/pc/controller src/pc/imgui
 endif
 
 BIN_DIRS := bin bin/$(VERSION)
@@ -483,7 +483,7 @@ PLATFORM_CFLAGS += -DNO_SEGMENTED_MEMORY -DUSE_SYSTEM_MALLOC
 # Compiler and linker flags for graphics backend
 ifeq ($(TARGET_WINDOWS),1)
   GFX_CFLAGS  += -DGLEW_STATIC
-  GFX_LDFLAGS += -lpthread -lglew32 -lglu32 -lopengl32
+  GFX_LDFLAGS += -lpthread -lglew32 -lglu32 -lopengl32 -ld3dcompiler -ldwmapi
 endif
 ifeq ($(TARGET_LINUX),1)
   GFX_CFLAGS  += 

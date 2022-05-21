@@ -29,6 +29,10 @@
 
 #include "./game/settings.h"
 
+#include "../imgui/imgui.h"
+#include "../imgui/imgui_impl_win32.h"
+#include "../imgui/imgui_impl_dx11.h"
+
 #define DEBUG_D3D 0
 
 using namespace Microsoft::WRL; // For ComPtr
@@ -322,6 +326,20 @@ static void gfx_d3d11_init(void) {
                   gfx_dxgi_get_h_wnd(), "Failed to create per-draw constant buffer.");
 
     d3d.context->PSSetConstantBuffers(1, 1, d3d.per_draw_cb.GetAddressOf());
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplWin32_Init(gfx_dxgi_get_h_wnd());
+    ImGui_ImplDX11_Init(d3d.device.Get(), d3d.context.Get());
 }
 
 
@@ -687,6 +705,25 @@ static void gfx_d3d11_on_resize(void) {
 }
 
 static void gfx_d3d11_start_frame(void) {
+
+
+    
+    // Start the Dear ImGui frame
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+    ImGui::ShowDemoWindow();
+
+    // Rendering
+    ImGui::Render();
+    d3d.context->OMSetRenderTargets(1, &d3d.backbuffer_view, NULL);
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+    d3d.swap_chain->Present(1, 0); // Present with vsync
+    //g_pSwapChain->Present(0, 0); // Present without vsync
+
     // Set render targets
 
     d3d.context->OMSetRenderTargets(1, d3d.backbuffer_view.GetAddressOf(), d3d.depth_stencil_view.Get());
