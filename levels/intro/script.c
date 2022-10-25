@@ -43,6 +43,38 @@ const LevelScript level_intro_splash_screen[] = {
     EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular),
 };
 
+const LevelScript level_intro_64plus[] = {
+    INIT_LEVEL(),
+    BLACKOUT(/*active*/ TRUE),
+    FIXED_LOAD(/*loadAddr*/ _goddardSegmentStart, /*romStart*/ _goddardSegmentRomStart, /*romEnd*/ _goddardSegmentRomEnd),
+    LOAD_MARIO_HEAD(/*loadHeadID*/ REGULAR_FACE),
+    LOAD_RAW(/*seg*/ 0x13, _behaviorSegmentRomStart, _behaviorSegmentRomEnd),
+    LOAD_MIO0_TEXTURE(/*seg*/ 0x0A, _title_screen_bg_mio0SegmentRomStart, _title_screen_bg_mio0SegmentRomEnd),
+
+    ALLOC_LEVEL_POOL(),
+    AREA(/*index*/ 1, intro_geo_64plus),
+    END_AREA(),
+    FREE_LEVEL_POOL(),
+
+    SET_MENU_MUSIC(/*seq*/ SEQ_MENU_FILE_SELECT),
+    SLEEP(/*frames*/ 20),
+    BLACKOUT(/*active*/ FALSE),
+    LOAD_AREA(/*area*/ 1),
+    TRANSITION(/*transType*/ WARP_TRANSITION_FADE_FROM_CIRCLE, /*time*/ 20, /*color*/ 0x00, 0x00, 0x00),
+    SLEEP(/*frames*/ 20),
+
+    CALL_LOOP(/*arg*/ LVL_INTRO_64PLUS, /*func*/ lvl_intro_update),
+
+    TRANSITION(/*transType*/ WARP_TRANSITION_FADE_INTO_CIRCLE, /*time*/ 20, /*color*/ 0x00, 0x00, 0x00),
+
+    SLEEP(/*frames*/ 35),
+    CMD2A(/*unk2*/ 1),
+    CLEAR_LEVEL(),
+    JUMP_IF(/*op*/ OP_EQ, /*arg*/ -1, script_intro_L5),
+    JUMP(script_intro_L3),
+    //EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_splash_screen),
+};
+
 const LevelScript level_intro_mario_head_regular[] = {
     INIT_LEVEL(),
     BLACKOUT(/*active*/ TRUE),

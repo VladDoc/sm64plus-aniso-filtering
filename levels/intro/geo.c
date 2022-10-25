@@ -46,33 +46,33 @@ const GeoLayout intro_geo_0002D0[] = {
 
 // 0x0E00035C
 const GeoLayout intro_geo_mario_head_regular[] = {
-   GEO_NODE_SCREEN_AREA(0, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, SCREEN_WIDTH/2, SCREEN_HEIGHT/2),
-   GEO_OPEN_NODE(),
-      GEO_ZBUFFER(0),
-      GEO_OPEN_NODE(),
-         GEO_NODE_ORTHO(100),
-         GEO_OPEN_NODE(),
-            GEO_ASM(0, geo_intro_regular_backdrop),
+    GEO_NODE_SCREEN_AREA(0, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, SCREEN_WIDTH/2, SCREEN_HEIGHT/2),
+    GEO_OPEN_NODE(),
+    GEO_ZBUFFER(0),
+    GEO_OPEN_NODE(),
+    GEO_NODE_ORTHO(100),
+    GEO_OPEN_NODE(),
+    GEO_ASM(0, geo_intro_regular_backdrop),
 #ifdef VERSION_SH
-            GEO_ASM(0, geo_intro_face_easter_egg),
+    GEO_ASM(0, geo_intro_face_easter_egg),
 #endif
-         GEO_CLOSE_NODE(),
-      GEO_CLOSE_NODE(),
-      GEO_ZBUFFER(1),
-      GEO_OPEN_NODE(),
-         GEO_CAMERA_FRUSTUM(45, 128, 16384),
-         GEO_OPEN_NODE(),
-            GEO_ASM(2, geo_draw_mario_head_goddard),
-         GEO_CLOSE_NODE(),
-      GEO_CLOSE_NODE(),
+    GEO_CLOSE_NODE(),
+    GEO_CLOSE_NODE(),
+    GEO_ZBUFFER(1),
+    GEO_OPEN_NODE(),
+    GEO_CAMERA_FRUSTUM(45, 128, 16384),
+    GEO_OPEN_NODE(),
+    GEO_ASM(2, geo_draw_mario_head_goddard),
+    GEO_CLOSE_NODE(),
+    GEO_CLOSE_NODE(),
 #ifdef VERSION_SH
-   GEO_ZBUFFER(0),
-   GEO_OPEN_NODE(),
-      GEO_ASM(0, geo_intro_rumble_pak_graphic),
-   GEO_CLOSE_NODE(),
+    GEO_ZBUFFER(0),
+    GEO_OPEN_NODE(),
+    GEO_ASM(0, geo_intro_rumble_pak_graphic),
+    GEO_CLOSE_NODE(),
 #endif
-   GEO_CLOSE_NODE(),
-   GEO_END(),
+    GEO_CLOSE_NODE(),
+    GEO_END(),
 };
 
 // 0x0E0003B8
@@ -140,3 +140,20 @@ const GeoLayout intro_geo_000414[] = {
    GEO_END(),
 };
 
+
+// 0x0E00035C
+const GeoLayout intro_geo_64plus[] = {
+    GEO_NODE_SCREEN_AREA(0, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, SCREEN_WIDTH/2, SCREEN_HEIGHT/2),
+    GEO_OPEN_NODE(),
+    GEO_ZBUFFER(0),
+    GEO_OPEN_NODE(),
+    GEO_NODE_ORTHO(100),
+    GEO_OPEN_NODE(),
+    GEO_ASM(0, geo_intro_regular_backdrop),
+
+    GEO_CLOSE_NODE(),
+    GEO_CLOSE_NODE(),
+
+    GEO_CLOSE_NODE(),
+    GEO_END(),
+};

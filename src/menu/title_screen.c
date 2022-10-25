@@ -27,7 +27,10 @@
 #define DEFINE_LEVEL(textname, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10) textname,
 
 static char sLevelSelectStageNames[64][16] = {
-    #include "levels/level_defines.h"
+#include "levels/level_defines.h"
+};
+static char sLevelSelectStageNamesModern[64][32] = {
+#include "levels/level_defines_modern.h"
 };
 #undef STUB_LEVEL
 #undef DEFINE_LEVEL
@@ -147,6 +150,66 @@ s16 intro_level_select(void) {
 }
 
 /**
+ * Special debug menu for sm64plus contains a better level select.
+ * Maybe even allows you to change settings?
+ */
+s16 intro_64plus(void) {
+
+    // perform the ID updates per each button press.
+    // runs into a loop so after a button is pressed
+    // stageChanged goes back to FALSE
+    if (gPlayer1Controller->buttonPressed & A_BUTTON) {
+        do {
+            gCurrLevelNum++;
+            if (gCurrLevelNum > LEVEL_MAX) {
+                gCurrLevelNum = LEVEL_MIN; // exceeded max. set to min.
+            }
+        }
+        while (gCurrLevelNum == LEVEL_UNKNOWN_1 ||
+               gCurrLevelNum == LEVEL_UNKNOWN_2 ||
+               gCurrLevelNum == LEVEL_UNKNOWN_3 ||
+               gCurrLevelNum == LEVEL_UNKNOWN_32 ||
+               gCurrLevelNum == LEVEL_UNKNOWN_35 ||
+               gCurrLevelNum == LEVEL_UNKNOWN_37 ||
+               gCurrLevelNum == LEVEL_UNKNOWN_38);
+
+        play_sound(SOUND_GENERAL_LEVEL_SELECT_CHANGE, gGlobalSoundSource);
+    }
+    if (gPlayer1Controller->buttonPressed & B_BUTTON) {
+        do {
+            gCurrLevelNum--;
+            if (gCurrLevelNum < LEVEL_MIN) {
+                gCurrLevelNum = LEVEL_MAX; // exceeded min. set to max.
+            }
+        }
+        while (gCurrLevelNum == LEVEL_UNKNOWN_1 ||
+               gCurrLevelNum == LEVEL_UNKNOWN_2 ||
+               gCurrLevelNum == LEVEL_UNKNOWN_3 ||
+               gCurrLevelNum == LEVEL_UNKNOWN_32 ||
+               gCurrLevelNum == LEVEL_UNKNOWN_35 ||
+               gCurrLevelNum == LEVEL_UNKNOWN_37 ||
+               gCurrLevelNum == LEVEL_UNKNOWN_38);
+        play_sound(SOUND_GENERAL_LEVEL_SELECT_CHANGE, gGlobalSoundSource);
+    }
+
+    // Use file 4 and last act as a test
+    gCurrSaveFileNum = 4;
+    gCurrActNum = 6;
+
+    print_text_centered(160, 210, "SUPER MARIO 64 PLUS");
+    print_text_centered(160, 20, "PRESS START BUTTON");
+    print_text_centered(160, 60, sLevelSelectStageNamesModern[gCurrLevelNum - 1]); // print stage name
+
+    // start being pressed signals the stage to be started.
+    if (gPlayer1Controller->buttonPressed & START_BUTTON) {
+
+        play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
+        return gCurrLevelNum;
+    }
+    return 0;
+}
+
+/**
  * Regular intro function that handles Mario's greeting voice and game start.
  */
 s32 intro_regular(void) {
@@ -243,6 +306,9 @@ s32 lvl_intro_update(s16 arg, UNUSED s32 unusedArg) {
             break;
         case LVL_INTRO_LEVEL_SELECT:
             retVar = intro_level_select();
+            break;
+        case LVL_INTRO_64PLUS:
+            retVar = intro_64plus();
             break;
     }
     return retVar;

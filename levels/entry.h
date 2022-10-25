@@ -5,5 +5,6 @@
 
 // script
 extern const LevelScript level_script_entry[];
+extern const LevelScript level_script_entry_64plus[];
 
 #endif
