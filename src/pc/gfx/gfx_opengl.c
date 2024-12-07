@@ -421,6 +421,8 @@ static void gfx_opengl_select_texture(int tile, GLuint texture_id) {
 
 static void gfx_opengl_upload_texture(const uint8_t *rgba32_buf, int width, int height) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba32_buf);
+    if(configTextureMipMaping)
+        glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 static uint32_t gfx_cm_to_opengl(uint32_t val) {
@@ -430,12 +432,36 @@ static uint32_t gfx_cm_to_opengl(uint32_t val) {
     return (val & G_TX_MIRROR) ? GL_MIRRORED_REPEAT : GL_REPEAT;
 }
 
+static int calculate_trilinear_mode(bool linear_filter, uint32_t mipmap_mode)
+{
+    if(linear_filter && configTextureMipMaping == 1) 
+        return GL_LINEAR_MIPMAP_LINEAR;
+    
+    if(linear_filter && configTextureMipMaping == 2) 
+        return GL_LINEAR_MIPMAP_NEAREST;
+
+    if(!linear_filter && configTextureMipMaping == 1) 
+        return GL_NEAREST_MIPMAP_LINEAR;
+    
+    if(!linear_filter && configTextureMipMaping == 2) 
+        return GL_NEAREST_MIPMAP_NEAREST;
+
+    return linear_filter ? GL_LINEAR : GL_NEAREST;
+}
+
 static void gfx_opengl_set_sampler_parameters(int tile, bool linear_filter, uint32_t cms, uint32_t cmt) {
+    int trilinear = calculate_trilinear_mode(linear_filter, configTextureMipMaping);
+
+    float aniso = (float)(configTextureAnisoLevel > 16u ? 16u : configTextureAnisoLevel);
+
     glActiveTexture(GL_TEXTURE0 + tile);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, linear_filter ? GL_LINEAR : GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, trilinear);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, linear_filter ? GL_LINEAR : GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, gfx_cm_to_opengl(cms));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, gfx_cm_to_opengl(cmt));
+
+    if(configTextureMipMaping && aniso > 1.0f)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
 }
 
 static void gfx_opengl_set_depth_test(bool depth_test) {

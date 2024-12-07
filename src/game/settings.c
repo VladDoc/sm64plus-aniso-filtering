@@ -174,6 +174,9 @@ unsigned int configFrameRate = 1;
 float configDrawDistanceMultiplier = 0.0f;
 unsigned int configLevelOfDetail = 2;
 unsigned int configTextureFiltering = 2;
+// 0 -> off, 1 -> X_MIPMAP_LINEAR, 2 -> X_MIPMAP_NEAREST
+unsigned int configTextureMipMaping = 0;
+unsigned int configTextureAnisoLevel = 4u;
 unsigned int configNoiseType = 0;
 s8 configForce4by3 = 0;
 

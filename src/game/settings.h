@@ -23,6 +23,8 @@ extern unsigned int configFrameRate;
 extern float configDrawDistanceMultiplier;
 extern unsigned int configLevelOfDetail;
 extern unsigned int configTextureFiltering;
+extern unsigned int configTextureMipMaping;
+extern unsigned int configTextureAnisoLevel;
 extern unsigned int configNoiseType;
 extern s8 configForce4by3;
 

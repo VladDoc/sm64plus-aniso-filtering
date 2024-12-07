@@ -6,6 +6,11 @@
 #include <assert.h>
 #include <ctype.h>
 
+#ifdef __linux__
+#include <linux/limits.h>
+#include <sys/stat.h>
+#endif
+
 #include "configfile.h"
 #include "../game/settings.h"
 #include "../game/main.h"
@@ -56,6 +61,8 @@ static const struct ConfigOption options[] = {
     { .name = "draw_distance", .type = CONFIG_TYPE_FLOAT, .floatValue = &configDrawDistanceMultiplier },
     { .name = "level_of_detail", .type = CONFIG_TYPE_UINT, .uintValue = &configLevelOfDetail },
     { .name = "texture_filtering", .type = CONFIG_TYPE_UINT, .uintValue = &configTextureFiltering },
+    { .name = "gl_texture_mipmap", .type = CONFIG_TYPE_UINT, .uintValue = &configTextureMipMaping },
+    { .name = "gl_texture_anisotropy", .type = CONFIG_TYPE_UINT, .uintValue = &configTextureAnisoLevel },
     { .name = "noise_type", .type = CONFIG_TYPE_UINT, .uintValue = &configNoiseType },
     { .name = "force_4by3", .type = CONFIG_TYPE_BOOL, .boolValue = &configForce4by3 },
 
@@ -341,12 +348,25 @@ static unsigned int tokenize_string(char *str, int maxTokens, char **tokens) {
     return count;
 }
 
+#ifdef WIN32
+    #define PATH_MAX 260
+    #define realpath(N,R) _fullpath((R),(N),PATH_MAX)
+#endif
+
 // Loads the config file specified by 'filename'
 void configfile_load(const char *filename) {
     FILE *file;
     char *line;
 
-    printf("Loading configuration from '%s'\n", filename);
+    // print config full path so that user would know 
+    // if config file is being read not from the game directory
+    do {
+        char fullpath[PATH_MAX];
+        fullpath[0] = '\0';
+        const char* path = realpath(filename, fullpath);
+        
+        if(path) printf("Loading configuration from '%s'\n", path);
+    } while(0);
 
     file = fopen(filename, "r");
     if (file == NULL) {
@@ -411,16 +431,26 @@ void configfile_load(const char *filename) {
 void configfile_save(const char *filename) {
     FILE *file;
 
-    char *dir = malloc(128);
-
-    printf("Saving configuration to '%s'\n", filename);
+    // print full path to the config file to be saved 
+    do {
+        char fullpath[PATH_MAX];
+        fullpath[0] = '\0';
+        const char* path = realpath(filename, fullpath);
+        
+        printf("Saving configuration to '%s'\n", path ? path : filename);
+    } while(0);
 
 #ifdef __linux__
-    strcat(dir, "/");
-    char* copy = strdup(filename);
-    strcat(dir, strtok(copy + 1, "/"));
-    free(copy);
-    mkdir(dir, 0777);
+    do {
+        char dir[PATH_MAX];
+        dir[0] = '\0';
+
+        strcat(dir, "/");
+        char* copy = strdup(filename);
+        strcat(dir, strtok(copy + 1, "/"));
+        free(copy);
+        mkdir(dir, 0777);
+    } while(0);
 #endif
 
     file = fopen(filename, "w");
